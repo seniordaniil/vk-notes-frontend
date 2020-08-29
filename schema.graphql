@@ -1,0 +1,105 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+	query: Query
+	mutation: Mutation
+}
+
+type FolderDto {
+	access: MemberAccess
+	count: Int!
+	date: DateTime!
+	id: ID!
+	invite: String
+	name: String!
+}
+
+type FolderRelDto {
+	access: MemberAccess!
+	date: DateTime!
+	folderId: String!
+	userId: Int!
+}
+
+type Mutation {
+	createFolder(input: CreateFolderInput!): FolderDto!
+	createInvite(input: ByIdInput!): String!
+	createNote(input: CreateNoteInput!): NoteDto!
+	deleteInvite(input: ByIdInput!): Boolean!
+	joinFolder(input: JoinFolderInput!): FolderRelDto!
+	leaveFolder(input: ByIdInput!): Boolean!
+	removeFolder(input: ByIdInput!): Boolean!
+	removeMember(input: FolderMemberInput!): Boolean!
+	removeNote(input: ByNoteInput!): Boolean!
+	updateFolder(input: UpdateFolderInput!): Boolean!
+	updateNote(input: UpdateNoteInput!): DateTime!
+}
+
+type NoteDto {
+	folderId: String!
+	id: ID!
+	text: String
+	title: String!
+	updated: DateTime!
+	userId: Int!
+}
+
+type Query {
+	folder(id: String!, invite: String): FolderDto
+	folders(limit: Int!, offset: Int!): [FolderDto!]!
+	foldersCount: Int!
+	members(id: String!, limit: Int!, offset: Int!): [FolderRelDto!]!
+	membersCount(id: String!): Int!
+	note(id: String!): NoteDto
+	notes(folderId: String, limit: Int!, offset: Int!): [NoteDto!]!
+}
+
+enum MemberAccess {
+	Admin
+	Member
+}
+
+input ByIdInput {
+	id: String!
+}
+
+input ByNoteInput {
+	folderId: String!
+	id: String!
+}
+
+input CreateFolderInput {
+	name: String!
+}
+
+input CreateNoteInput {
+	id: String!
+	text: String
+	title: String!
+}
+
+input FolderMemberInput {
+	id: String!
+	memberId: Int!
+}
+
+input JoinFolderInput {
+	id: String!
+	invite: String!
+}
+
+input UpdateFolderInput {
+	id: String!
+	name: String!
+}
+
+input UpdateNoteInput {
+	id: String!
+	noteId: String!
+	text: String
+	title: String!
+}
+
+
+"A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format."
+scalar DateTime

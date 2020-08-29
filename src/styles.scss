@@ -1,0 +1,37 @@
+$schemes: (
+  space_gray: url("./bg-dark.png"), bright_light: url("./bg-light.png")
+
+);
+
+@mixin bg($url, $color) {
+  background: {
+    repeat: repeat;
+    image: $url;
+    attachment: fixed;
+    color: $color !important;
+  };
+}
+
+.Placeholder {
+  background-color: transparent !important;
+}
+
+body {
+  @each $scheme, $url in $schemes {
+    &[scheme=#{$scheme}] {
+      @include bg($url, var(--background_content));
+
+      & .Panel .Panel__in, .Panel::after {
+        @include bg($url, transparent);
+      }
+
+      & .Panel .PanelHeader__fixed {
+        @include bg($url, transparent);
+      }
+
+      & .FixedLayout--filled {
+        @include bg($url, transparent);
+      }
+    }
+  }
+}
