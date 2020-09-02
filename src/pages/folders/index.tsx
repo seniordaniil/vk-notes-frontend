@@ -10,18 +10,19 @@ import {
   PanelHeaderButton,
   PullToRefresh,
   Button,
+  Placeholder,
 } from '@vkontakte/vkui';
 import { FolderCell, CreateAlert } from './components';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import PageHeader from 'ui/molecules/page-header';
-import { TiFolderAdd } from 'react-icons/ti';
+import { TiFolderAdd, TiFolder } from 'react-icons/ti';
 import IconCircle from 'ui/atoms/icon-circle';
+import Icon from 'ui/atoms/icons';
 import ToolbarTriple from 'ui/molecules/toolbar-triple';
 import plural from 'plural-ru';
-import bridge from '@vkontakte/vk-bridge';
 
-import Icon24Like from '@vkontakte/icons/dist/24/like';
 import Icon24Info from '@vkontakte/icons/dist/24/info';
+import Icon28Users3Outline from '@vkontakte/icons/dist/28/users_3_outline';
 
 const FoldersPage: FC = () => {
   const { router } = useLocation();
@@ -74,67 +75,76 @@ const FoldersPage: FC = () => {
     [router],
   );
 
-  const join = useCallback(() => {
-    bridge
-      .send('VKWebAppJoinGroup', {
-        group_id: parseInt(process.env.REACT_APP_GID),
-      })
-      .catch(console.error);
-  }, []);
+  const onCreate = useCallback(() => {
+    setPopout(
+      <CreateAlert
+        count={data.foldersCount}
+        onClose={() => setPopout(null)}
+        setCount={setCount}
+      />,
+    );
+  }, [setPopout, data, setCount]);
 
   return (
     <>
       <PanelHeader separator={false} />
       {!!data && (
         <>
-          <PullToRefresh onRefresh={onRefresh} isFetching={isFetching}>
-            <PageHeader
-              separator={'show'}
-              aside={
-                <PanelHeaderButton
-                  onClick={() =>
-                    setPopout(
-                      <CreateAlert
-                        count={data.foldersCount}
-                        onClose={() => setPopout(null)}
-                        setCount={setCount}
-                      />,
-                    )
-                  }
-                >
-                  <IconCircle
-                    size={'28px'}
-                    color={'#ffffff'}
-                    bg={'var(--accent)'}
+          {folders.length > 0 ? (
+            <PullToRefresh onRefresh={onRefresh} isFetching={isFetching}>
+              <PageHeader
+                separator={'show'}
+                aside={
+                  <PanelHeaderButton onClick={onCreate}>
+                    <IconCircle
+                      size={'28px'}
+                      color={'#ffffff'}
+                      bg={'var(--accent)'}
+                    >
+                      <TiFolderAdd size={'20px'} />
+                    </IconCircle>
+                  </PanelHeaderButton>
+                }
+              >
+                Папки
+              </PageHeader>
+              <Group>
+                {folders.length > 0 && (
+                  <InfiniteScroll
+                    next={next}
+                    hasMore={true}
+                    loader={null}
+                    dataLength={folders.length}
                   >
-                    <TiFolderAdd size={'20px'} />
-                  </IconCircle>
-                </PanelHeaderButton>
+                    {folders.map((folder) => (
+                      <FolderCell
+                        key={folder.id}
+                        folder={folder}
+                        data-id={folder.id}
+                        onClick={onClick}
+                        separator={true}
+                      />
+                    ))}
+                  </InfiniteScroll>
+                )}
+              </Group>
+            </PullToRefresh>
+          ) : (
+            <Placeholder
+              stretched
+              icon={
+                <Icon>
+                  <TiFolder size={'56px'} />
+                </Icon>
               }
-            >
-              Папки
-            </PageHeader>
-            <Group>
-              {folders.length > 0 && (
-                <InfiniteScroll
-                  next={next}
-                  hasMore={true}
-                  loader={null}
-                  dataLength={folders.length}
-                >
-                  {folders.map((folder) => (
-                    <FolderCell
-                      key={folder.id}
-                      folder={folder}
-                      data-id={folder.id}
-                      onClick={onClick}
-                      separator={true}
-                    />
-                  ))}
-                </InfiniteScroll>
-              )}
-            </Group>
-          </PullToRefresh>
+              header={'Нет папок'}
+              action={
+                <Button size={'l'} onClick={onCreate}>
+                  Создать новую
+                </Button>
+              }
+            />
+          )}
           <ToolbarTriple
             left={
               <Button
@@ -146,8 +156,12 @@ const FoldersPage: FC = () => {
               </Button>
             }
             right={
-              <Button mode={'tertiary'} onClick={join}>
-                <Icon24Like />
+              <Button
+                mode={'tertiary'}
+                href={`https://vk.com/public${process.env.REACT_APP_GID}`}
+                target={'_blank'}
+              >
+                <Icon28Users3Outline />
               </Button>
             }
           >

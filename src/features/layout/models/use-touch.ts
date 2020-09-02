@@ -50,8 +50,13 @@ export const useScrollRestoration = () => {
 };
 
 type Deps = [GlobalEventHandlers, ...any[]];
+type UseTouchEvent = 'touchstart' | 'touchend';
 
-export const useTouch = (onTouch: (e: TouchEvent) => void, deps: Deps) => {
+export const useTouch = (
+  e: UseTouchEvent,
+  onTouch: (e: TouchEvent) => void,
+  deps: Deps,
+) => {
   useEffect(() => {
     const el = deps[0];
 
@@ -61,13 +66,47 @@ export const useTouch = (onTouch: (e: TouchEvent) => void, deps: Deps) => {
         onTouch(e);
       };
 
-      el.addEventListener('touchstart', listener, {
+      el.addEventListener(e, listener, {
         passive: false,
         capture: true,
       });
 
       return () => {
-        el.removeEventListener('touchstart', listener, true);
+        el.removeEventListener(e, listener, true);
+      };
+    }
+    // eslint-disable-next-line
+  }, deps);
+};
+
+export const useTouchClick = (onTouch: (e: TouchEvent) => void, deps: Deps) => {
+  useEffect(() => {
+    const el = deps[0];
+
+    if (el) {
+      let f = true;
+      const endListener = (e: TouchEvent) => {
+        if (f) {
+          e.preventDefault();
+          onTouch(e);
+        } else {
+          f = true;
+        }
+      };
+
+      el.addEventListener('touchend', endListener, {
+        passive: false,
+      });
+
+      const moveListener = (e: TouchEvent) => {
+        f = false;
+      };
+
+      el.addEventListener('touchmove', moveListener, { capture: true });
+
+      return () => {
+        el.removeEventListener('touchend', endListener, true);
+        el.removeEventListener('touchmove', moveListener, true);
       };
     }
     // eslint-disable-next-line

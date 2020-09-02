@@ -1,9 +1,9 @@
 import { createRouter, State } from 'router5';
 import { historyPlugin, canNavigateMiddleware } from 'features/router';
+import { fetchCurrentUser } from 'features/vk-data';
 import browserPlugin from 'router5-plugin-browser';
 import loggerPlugin from 'router5-plugin-logger';
 import bridge from '@vkontakte/vk-bridge';
-import { fetchCurrentUser, getToken } from 'features/vk-data';
 
 const redirect = (state: Partial<State>) =>
   Promise.reject({
@@ -35,7 +35,7 @@ export const router = createRouter(
         },
       ],
       canActivate: (router, deps) => (toState) => {
-        if (deps.onboarding) return true;
+        if (deps.isUser) return true;
 
         router.setDependency('ref', toState);
 
@@ -63,28 +63,35 @@ router.usePlugin(historyPlugin, browserPlugin({ useHash: true }), loggerPlugin);
 
 bridge.subscribe(({ detail }) => {
   if (detail.type === 'VKWebAppUpdateConfig') {
+    console.log('update data', detail.data);
     const schemeAttribute = document.createAttribute('scheme');
-    schemeAttribute.value = detail.data.scheme
-      ? detail.data.scheme
-      : 'bright_light';
+    schemeAttribute.value = detail.data.scheme || 'bright_light';
 
     document.body.attributes.setNamedItem(schemeAttribute);
   }
 });
 
+/*const deleteIsUser = () => {
+  return bridge.send('VKWebAppStorageSet', {
+    key: 'isUser',
+    value: '',
+  });
+};*/
+
 function bootstrap() {
   const onboarding = bridge
     .send('VKWebAppStorageGet', {
-      keys: ['onboarding'],
+      keys: ['isUser'],
     })
     .then(({ keys }) => {
-      router.setDependency('onboarding', keys[0]?.value);
+      router.setDependency('isUser', keys[0]?.value);
     });
 
-  return Promise.allSettled([getToken(), fetchCurrentUser(), onboarding]);
+  return onboarding;
 }
 
 bootstrap()
   .then(() => router.start())
+  .then(() => fetchCurrentUser())
   .then(() => bridge.send('VKWebAppInit'))
   .catch(console.error);

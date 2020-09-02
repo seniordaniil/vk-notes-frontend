@@ -9,5 +9,6 @@ declare namespace NodeJS {
     readonly REACT_APP_ALBUM: string;
     readonly REACT_APP_TOKEN: string;
     readonly REACT_APP_GID: string;
+    readonly REACT_APP_ERUDA: string;
   }
 }

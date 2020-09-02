@@ -9,7 +9,7 @@ import {
 import { useStore } from 'effector-react';
 import { PopoutValueContext, useSlice } from 'features/layout';
 import { useValue } from 'features/context-manager';
-import { $usersInfo } from 'features/vk-data';
+import { $currentUser } from 'features/vk-data';
 import {
   Cell,
   CellButton,
@@ -57,7 +57,7 @@ const FolderSettingsPage: FC = () => {
     );
   }, [router, goBack, id]);
 
-  const users = useStore($usersInfo);
+  const currentUser = useStore($currentUser);
 
   const { data, fetchMore } = useQuery<GetFolder, GetFolderVariables>(
     GET_FOLDER_QUERY,
@@ -205,7 +205,7 @@ const FolderSettingsPage: FC = () => {
                 <MemberCell
                   onClick={showRmMemberAlert}
                   key={member.userId}
-                  user={users[member.userId]}
+                  currentUser={currentUser}
                   member={member}
                   removable={
                     data.folder.access === MemberAccess.Admin &&

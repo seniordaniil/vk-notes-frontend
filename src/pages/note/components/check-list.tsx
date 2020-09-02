@@ -47,16 +47,25 @@ const CheckListItem = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  word-break: break-word;
   & + & {
-    margin-top: 8px;
+    padding-top: 8px;
+    box-sizing: border-box;
+  }
+
+  * + & {
+    padding-top: 1em;
+    box-sizing: border-box;
+  }
+
+  & + :not(&) {
+    padding-top: 1em;
+    box-sizing: border-box;
   }
 
   &:last-child {
-    margin-bottom: 1em;
-  }
-
-  & + .Img {
-    margin-top: 1em;
+    padding-bottom: 1em;
+    box-sizing: border-box;
   }
 `;
 
@@ -100,7 +109,7 @@ export const CheckListItemElement: FC<RenderElementProps> = ({
   }, [editor, elRef, readOnly]);
 
   const [ref, setRef] = useState<HTMLElement>(null);
-  useTouch(onChange, [ref, onChange]);
+  useTouch('touchstart', onChange, [ref, onChange]);
 
   return (
     <CheckListItem {...attributes}>

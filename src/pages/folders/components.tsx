@@ -29,6 +29,9 @@ const StyledCell = styled(SimpleCell)`
   & > .Icon {
     padding-left: 0px !important;
   }
+  & .SimpleCell__indicator {
+    overflow: initial;
+  }
 `;
 
 interface FolderCellProps {
@@ -134,6 +137,7 @@ export const CreateAlert: FC<CreateAlertProps> = ({
         placeholder={'Имя'}
         value={name}
         onChange={(e) => setName(e.currentTarget.value)}
+        maxLength={32}
       />
     </AlertNotClosable>
   );

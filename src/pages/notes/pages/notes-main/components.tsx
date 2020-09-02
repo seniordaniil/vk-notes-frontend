@@ -3,6 +3,13 @@ import { GetNotes_notes } from 'api';
 import { useTs } from 'features/note';
 import { SimpleCell, Separator } from '@vkontakte/vkui';
 import { SimpleCellProps } from '@vkontakte/vkui/dist/components/SimpleCell/SimpleCell';
+import styled from 'styled-components';
+
+const StyledCell = styled(SimpleCell)`
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+`;
 
 interface NoteCellProps {
   note: GetNotes_notes;
@@ -18,9 +25,9 @@ export const NoteCell: FC<SimpleCellProps & NoteCellProps> = ({
 
   return (
     <>
-      <SimpleCell {...props} description={updated}>
+      <StyledCell {...props} description={updated}>
         {note.title || 'Без названия'}
-      </SimpleCell>
+      </StyledCell>
       {separator && <Separator />}
     </>
   );

@@ -16,6 +16,7 @@ const NotesPage: FC = () => {
       <PanelHeaderBack separator={false} onClick={back} label={'Назад'} />
       {params?.invite ? (
         <NotesJoinPage
+          goBack={back}
           id={params.folderId}
           invite={params.invite}
           router={router}

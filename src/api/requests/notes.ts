@@ -7,7 +7,7 @@ const NOTE_FRAGMENT_BIT = gql`
     folderId
     updated
     userId
-    title
+    title(len: $len)
   }
 `;
 
@@ -20,6 +20,7 @@ export const GET_NOTES_QUERY = gql`
     $limit: Int!
     $includeFolder: Boolean = true
     $includeNotes: Boolean = true
+    $len: Int = 80
   ) {
     folder(id: $id, invite: $invite) @include(if: $includeFolder) {
       ...FolderFragment
@@ -37,15 +38,15 @@ export const GET_NOTES_QUERY = gql`
 
 export const NOTE_FRAGMENT = gql`
   fragment NoteFragment on NoteDto {
-    text
     ...NoteFragmentBit
+    text
   }
 
   ${NOTE_FRAGMENT_BIT}
 `;
 
 export const GET_NOTE_QUERY = gql`
-  query GetNote($id: String!) {
+  query GetNote($id: String!, $len: Int) {
     note(id: $id) {
       ...NoteFragment
     }

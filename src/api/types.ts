@@ -204,6 +204,8 @@ export interface GetFolder_members {
   folderId: string;
   userId: number;
   access: MemberAccess;
+  photo: string | null;
+  fullName: string | null;
 }
 
 export interface GetFolder {
@@ -275,11 +277,11 @@ export interface GetNotesVariables {
 
 export interface GetNote_note {
   __typename: "NoteDto";
-  text: string | null;
   id: string;
   folderId: string;
   updated: any;
   userId: number;
+  text: string | null;
   title: string;
 }
 
@@ -382,6 +384,23 @@ export interface NoteFragmentBit {
   folderId: string;
   updated: any;
   userId: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL fragment: NoteFragmentCut
+// ====================================================
+
+export interface NoteFragmentCut {
+  __typename: "NoteDto";
+  id: string;
+  folderId: string;
+  updated: any;
+  userId: number;
   title: string;
 }
 
@@ -396,11 +415,11 @@ export interface NoteFragmentBit {
 
 export interface NoteFragment {
   __typename: "NoteDto";
-  text: string | null;
   id: string;
   folderId: string;
   updated: any;
   userId: number;
+  text: string | null;
   title: string;
 }
 

@@ -97,6 +97,8 @@ export const GET_FOLDER_QUERY = gql`
       folderId
       userId
       access
+      photo
+      fullName
     }
   }
   ${FOLDER_FRAGMENT}

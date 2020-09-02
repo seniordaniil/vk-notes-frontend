@@ -11,6 +11,10 @@ import * as serviceWorker from './serviceWorker';
 import { router } from './routes';
 import { RouterProvider } from 'react-router5';
 
+if (process.env.REACT_APP_ERUDA) {
+  import('./eruda').catch(console.error);
+}
+
 ReactDOM.render(
   <React.StrictMode>
     <ApolloProvider client={client}>

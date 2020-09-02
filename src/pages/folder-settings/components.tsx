@@ -55,16 +55,23 @@ const ButtonDestructive = styled(Button)`
 interface MemberCellProps {
   removable: boolean;
   member: GetFolder_members;
-  user?: UserInfo;
+  currentUser: UserInfo;
   onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 export const MemberCell: FC<MemberCellProps> = ({
   removable,
-  user,
+  currentUser,
   member,
   onClick,
 }) => {
+  const photo =
+    member.userId === currentUser?.id ? currentUser?.photo : member?.photo;
+  const name =
+    member.userId === currentUser?.id
+      ? currentUser?.fullName
+      : member?.fullName;
+
   return (
     <SimpleCell
       disabled={true}
@@ -79,9 +86,9 @@ export const MemberCell: FC<MemberCellProps> = ({
           </ButtonDestructive>
         )
       }
-      before={<Avatar src={user?.photo} size={40} />}
+      before={<Avatar src={photo} size={40} />}
     >
-      {user?.fullName}
+      {name}
     </SimpleCell>
   );
 };
@@ -163,6 +170,7 @@ export const UpdateAlert: FC<UpdateAlertProps> = ({
       <h2>Новое имя</h2>
       <p>Введите название для этой папки.</p>
       <AlertInput
+        maxLength={32}
         getRef={ref}
         placeholder={'Имя'}
         value={name}

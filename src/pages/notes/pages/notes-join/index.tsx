@@ -10,7 +10,7 @@ import {
   JoinFolderVariables,
   JoinFolder,
 } from 'api';
-import { $usersInfo } from 'features/vk-data';
+import { $currentUser } from 'features/vk-data';
 import { Placeholder, Button, UsersStack } from '@vkontakte/vkui';
 import { TiFolder } from 'react-icons/ti';
 import Icon from 'ui/atoms/icons';
@@ -20,10 +20,16 @@ interface NotesJoinPageProps {
   id: string;
   invite: string;
   router: Router;
+  goBack: () => void;
 }
 
-const NotesJoinPage: FC<NotesJoinPageProps> = ({ id, invite, router }) => {
-  const users = useStore($usersInfo);
+const NotesJoinPage: FC<NotesJoinPageProps> = ({
+  id,
+  invite,
+  router,
+  goBack,
+}) => {
+  const currentUser = useStore($currentUser);
 
   const { data } = useQuery<GetFolder, GetFolderVariables>(GET_FOLDER_QUERY, {
     variables: {
@@ -37,8 +43,15 @@ const NotesJoinPage: FC<NotesJoinPageProps> = ({ id, invite, router }) => {
   });
 
   const photos = useMemo(
-    () => data?.members.slice(0, 3).map((user) => users[user.userId]?.photo),
-    [users, data],
+    () =>
+      data?.members
+        .slice(0, 3)
+        .map((member) =>
+          member.userId === currentUser?.id
+            ? currentUser?.photo
+            : member?.photo,
+        ),
+    [currentUser, data],
   );
 
   const countDesc = useMemo(
@@ -76,11 +89,11 @@ const NotesJoinPage: FC<NotesJoinPageProps> = ({ id, invite, router }) => {
       .catch(console.error);
   }, [joinFolder, go, id, invite]);
 
-  if (!data?.folder) return null;
+  if (!data) return null;
   return (
     <Placeholder
       stretched
-      header={data.folder.name}
+      header={data.folder ? data.folder.name : '404'}
       icon={
         <Icon>
           <TiFolder size={'56px'} />
@@ -89,21 +102,31 @@ const NotesJoinPage: FC<NotesJoinPageProps> = ({ id, invite, router }) => {
       action={
         <Button
           size={'xl'}
-          onClick={data.folder.access ? go : join}
+          onClick={data.folder ? (data.folder.access ? go : join) : goBack}
           disabled={loading}
         >
-          {data.folder.access ? 'Перейти' : 'Добавить'}
+          {data.folder
+            ? data.folder.access
+              ? 'Перейти'
+              : 'Добавить'
+            : 'К папкам'}
         </Button>
       }
     >
-      <p>
-        {data.folder.access
-          ? 'Эта папка уже находится в вашем списке'
-          : 'Вы хотите добавить эту папку в свой список?'}
-      </p>
-      <UsersStack layout={'vertical'} size={'m'} photos={photos}>
-        {countDesc}
-      </UsersStack>
+      {data.folder ? (
+        <>
+          <p>
+            {data.folder.access
+              ? 'Эта папка уже находится в вашем списке'
+              : 'Вы хотите добавить эту папку в свой список?'}
+          </p>
+          <UsersStack layout={'vertical'} size={'m'} photos={photos}>
+            {countDesc}
+          </UsersStack>
+        </>
+      ) : (
+        'Мы не нашли такую папку'
+      )}
     </Placeholder>
   );
 };

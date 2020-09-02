@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useCallback, useMemo, Component } from 'react';
 import { createEditor } from 'slate';
 import { Slate, Editable, withReact, RenderElementProps } from 'slate-react';
 import {
@@ -7,7 +7,7 @@ import {
   PopoutValueContext,
 } from 'features/layout';
 import { useValue } from 'features/context-manager';
-import { usePlatform, getClassName, Footer } from '@vkontakte/vkui';
+import { usePlatform, Footer, Div } from '@vkontakte/vkui';
 import {
   EditorBox,
   Editor,
@@ -18,6 +18,7 @@ import {
   EditorToolbar,
   withImages,
   RemoveAlert,
+  WrongAlert,
 } from './components';
 import { useModel } from './models';
 import PanelHeaderBack from 'ui/molecules/panel-header-back';
@@ -30,7 +31,11 @@ const Desc = styled(Footer)`
 
 const NotePage: FC = () => {
   const platform = usePlatform();
-  const DivClassName = getClassName('Div', platform);
+  const [, setPopout] = useValue(PopoutValueContext);
+
+  const onWrong = useCallback(() => {
+    setPopout(<WrongAlert onClose={() => setPopout(null)} />);
+  }, [setPopout]);
 
   const {
     id,
@@ -43,9 +48,7 @@ const NotePage: FC = () => {
     changed,
     updated,
     setChanged,
-  } = useModel();
-
-  const [, setPopout] = useValue(PopoutValueContext);
+  } = useModel(onWrong);
   const onRemove = useCallback(() => {
     setPopout(
       <RemoveAlert
@@ -84,33 +87,47 @@ const NotePage: FC = () => {
     <>
       <PanelHeaderBack separator={false} onClick={back} label={'Назад'} />
       {value && (
-        <Slate
-          editor={editor}
-          value={value}
-          onChange={(value) => {
-            setValue(value);
-            setChanged(true);
-          }}
-        >
-          <EditorBox {...eBoxProps}>
-            <Editor>
-              {updated && <Desc>{updated}</Desc>}
-              <Editable
-                className={`${DivClassName} Editable`}
-                renderElement={renderElement}
-                placeholder={'Напишите что-нибудь...'}
+        <ErrorBoundary>
+          <Slate
+            editor={editor}
+            value={value}
+            onChange={(value) => {
+              setValue(value);
+              setChanged(true);
+            }}
+          >
+            <EditorBox {...eBoxProps}>
+              <Editor>
+                {updated && <Desc>{updated}</Desc>}
+                <Div>
+                  <Editable
+                    className={`Editable`}
+                    renderElement={renderElement}
+                    placeholder={'Напишите что-нибудь...'}
+                  />
+                </Div>
+              </Editor>
+              <EditorToolbar
+                save={id ? update : create}
+                changed={changed}
+                onRemove={id ? onRemove : undefined}
               />
-            </Editor>
-            <EditorToolbar
-              save={id ? update : create}
-              changed={changed}
-              onRemove={id ? onRemove : undefined}
-            />
-          </EditorBox>
-        </Slate>
+            </EditorBox>
+          </Slate>
+        </ErrorBoundary>
       )}
     </>
   );
 };
+
+class ErrorBoundary extends Component<any, any> {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+    console.error(error);
+  }
+
+  render(): React.ReactNode {
+    return this.props.children;
+  }
+}
 
 export default NotePage;

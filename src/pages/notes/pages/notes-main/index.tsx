@@ -3,7 +3,7 @@ import { Router } from 'router5';
 import { useQuery } from '@apollo/client';
 import { GetNotes, GetNotesVariables, GET_NOTES_QUERY } from 'api';
 import plural from 'plural-ru';
-import { Group, Button, PullToRefresh } from '@vkontakte/vkui';
+import { Group, Button, PullToRefresh, Placeholder } from '@vkontakte/vkui';
 import { useSlice } from 'features/layout';
 import { NoteCell } from './components';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -11,6 +11,8 @@ import PageHeader from 'ui/molecules/page-header';
 import Icon24GearOutline from '@vkontakte/icons/dist/24/gear_outline';
 import Icon28WriteSquareOutline from '@vkontakte/icons/dist/28/write_square_outline';
 import ToolbarTriple from 'ui/molecules/toolbar-triple';
+
+import Icon56WriteOutline from '@vkontakte/icons/dist/56/write_outline';
 
 interface NotesMainPageProps {
   id: string;
@@ -76,9 +78,25 @@ const NotesMainPage: FC<NotesMainPageProps> = ({ id, router }) => {
     [id, router],
   );
 
+  const create = useCallback(() => {
+    router.navigate('app.note', { folderId: id });
+  }, [router, id]);
+
   if (!data) return null;
   return (
     <>
+      {notes.length < 1 && (
+        <Placeholder
+          stretched
+          icon={<Icon56WriteOutline />}
+          header={'Нет заметок'}
+          action={
+            <Button size={'l'} onClick={create}>
+              Создать новую
+            </Button>
+          }
+        />
+      )}
       <PullToRefresh onRefresh={onRefresh} isFetching={isFetching}>
         <PageHeader>{data.folder.name}</PageHeader>
         <Group>
@@ -114,10 +132,7 @@ const NotesMainPage: FC<NotesMainPageProps> = ({ id, router }) => {
           </Button>
         }
         right={
-          <Button
-            mode={'tertiary'}
-            onClick={() => router.navigate('app.note', { folderId: id })}
-          >
+          <Button mode={'tertiary'} onClick={create}>
             <Icon28WriteSquareOutline height={24} width={24} />
           </Button>
         }

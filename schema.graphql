@@ -18,6 +18,8 @@ type FolderRelDto {
 	access: MemberAccess!
 	date: DateTime!
 	folderId: String!
+	fullName: String
+	photo: String
 	userId: Int!
 }
 
@@ -39,7 +41,7 @@ type NoteDto {
 	folderId: String!
 	id: ID!
 	text: String
-	title: String!
+	title(len: Int): String!
 	updated: DateTime!
 	userId: Int!
 }

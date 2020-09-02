@@ -3,6 +3,7 @@ import React, { FC } from 'react';
 import { RenderElementProps } from 'slate-react';
 import { CheckListItemElement } from './check-list';
 import { ImageElement } from './image';
+import styled from 'styled-components';
 
 export const withLayout = (editor: Editor) => {
   const { normalizeNode } = editor;
@@ -48,14 +49,29 @@ export const withLayout = (editor: Editor) => {
   return editor;
 };
 
+const Title = styled.h2`
+  font-weight: 600;
+  margin-block-start: 0px;
+  margin-block-end: 0px;
+  font-size: 24px;
+  line-height: 36px;
+`;
+
+const Paragraph = styled.p`
+  margin-block-start: 0px;
+  margin-block-end: 0px;
+  font-size: 16px;
+  line-height: 24px;
+`;
+
 export const RenderedElement: FC<RenderElementProps> = (props) => {
   const { element, attributes, children } = props;
 
   switch (element.type) {
     case 'title':
-      return <h2 {...attributes}>{children}</h2>;
+      return <Title {...attributes}>{children}</Title>;
     case 'paragraph':
-      return <p {...attributes}>{children}</p>;
+      return <Paragraph {...attributes}>{children}</Paragraph>;
     case 'check-list-item':
       return <CheckListItemElement {...props} />;
     case 'img':

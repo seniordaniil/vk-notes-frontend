@@ -1,6 +1,5 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { offsetLimitPagination } from 'lib/apollo';
-import { fetchUsersEvent } from 'features/vk-data';
 import { initParams } from 'features/router';
 import axios from 'axios';
 
@@ -12,15 +11,18 @@ export const client = new ApolloClient({
         fields: {
           notes: offsetLimitPagination(['folderId']),
           folders: offsetLimitPagination(),
-          members: offsetLimitPagination(['id'], (refs, cache) => {
-            fetchUsersEvent(
-              refs.map((ref) => cache[ref.__ref].userId as number),
-            );
-          }),
+          members: offsetLimitPagination(['id']),
         },
       },
       FolderRelDto: {
         keyFields: ['folderId', 'userId'],
+      },
+      NoteDto: {
+        fields: {
+          title: {
+            keyArgs: [],
+          },
+        },
       },
     },
   }),

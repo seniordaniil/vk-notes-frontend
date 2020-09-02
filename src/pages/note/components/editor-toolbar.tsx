@@ -41,7 +41,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   }, [editor]);
 
   const [chRef, setChRef] = useState<HTMLElement>(null);
-  useTouch(insertCheckListItem, [chRef, insertCheckListItem]);
+  useTouch('touchstart', insertCheckListItem, [chRef, insertCheckListItem]);
 
   const [uploading, setUploading] = useState(false);
   const uploadImage = useCallback(
@@ -121,7 +121,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
     },
     [save],
   );
-  useTouch(onSave, [saveRef, onSave]);
+  useTouch('touchstart', onSave, [saveRef, onSave]);
 
   return (
     <>

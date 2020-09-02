@@ -17,8 +17,10 @@ export const EditorBox = styled.div<EditorBoxProps>`
     } - var(--safe-area-inset-top) ${unfixed ? '' : '- 52px'})`};
   justify-content: space-between;
 
-  & .FixedLayout {
+  & .FixedLayout--bottom {
     position: ${({ unfixed }) => (unfixed ? 'static' : 'fixed')};
+    padding-bottom: ${({ unfixed }) =>
+      unfixed ? '0px' : 'var(--safe-area-inset-bottom)'} !important;
   }
 `;
 
@@ -40,10 +42,6 @@ export const Editor = styled.div`
       & * {
         user-select: none !important;
       }
-    }
-
-    & p {
-      line-height: 24px;
     }
   }
 `;
