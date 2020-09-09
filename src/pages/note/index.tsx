@@ -111,6 +111,7 @@ const NotePage: FC = () => {
                 save={id ? update : create}
                 changed={changed}
                 onRemove={id ? onRemove : undefined}
+                setPopout={setPopout}
               />
             </EditorBox>
           </Slate>

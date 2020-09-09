@@ -15,6 +15,7 @@ import { Placeholder, Button, UsersStack } from '@vkontakte/vkui';
 import { TiFolder } from 'react-icons/ti';
 import Icon from 'ui/atoms/icons';
 import plural from 'plural-ru';
+import PanelHeaderBack from 'ui/molecules/panel-header-back';
 
 interface NotesJoinPageProps {
   id: string;
@@ -91,43 +92,48 @@ const NotesJoinPage: FC<NotesJoinPageProps> = ({
 
   if (!data) return null;
   return (
-    <Placeholder
-      stretched
-      header={data.folder ? data.folder.name : '404'}
-      icon={
-        <Icon>
-          <TiFolder size={'56px'} />
-        </Icon>
-      }
-      action={
-        <Button
-          size={'xl'}
-          onClick={data.folder ? (data.folder.access ? go : join) : goBack}
-          disabled={loading}
+    <>
+      <PanelHeaderBack separator={false} onClick={goBack} />
+      {!data ? null : (
+        <Placeholder
+          stretched
+          header={data.folder ? data.folder.name : '404'}
+          icon={
+            <Icon>
+              <TiFolder size={'56px'} />
+            </Icon>
+          }
+          action={
+            <Button
+              size={'xl'}
+              onClick={data.folder ? (data.folder.access ? go : join) : goBack}
+              disabled={loading}
+            >
+              {data.folder
+                ? data.folder.access
+                  ? 'Перейти'
+                  : 'Добавить'
+                : 'К папкам'}
+            </Button>
+          }
         >
-          {data.folder
-            ? data.folder.access
-              ? 'Перейти'
-              : 'Добавить'
-            : 'К папкам'}
-        </Button>
-      }
-    >
-      {data.folder ? (
-        <>
-          <p>
-            {data.folder.access
-              ? 'Эта папка уже находится в вашем списке'
-              : 'Вы хотите добавить эту папку в свой список?'}
-          </p>
-          <UsersStack layout={'vertical'} size={'m'} photos={photos}>
-            {countDesc}
-          </UsersStack>
-        </>
-      ) : (
-        'Мы не нашли такую папку'
+          {data.folder ? (
+            <>
+              <p>
+                {data.folder.access
+                  ? 'Эта папка уже находится в вашем списке'
+                  : 'Вы хотите добавить эту папку в свой список?'}
+              </p>
+              <UsersStack layout={'vertical'} size={'m'} photos={photos}>
+                {countDesc}
+              </UsersStack>
+            </>
+          ) : (
+            'Мы не нашли такую папку'
+          )}
+        </Placeholder>
       )}
-    </Placeholder>
+    </>
   );
 };
 

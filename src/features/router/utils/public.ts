@@ -13,6 +13,7 @@ export const goBack = debounce(10, true, (delta = -1) => {
 });
 
 export const initParams = window.location.search.slice(1);
+
 window.history.replaceState(
   null,
   null,

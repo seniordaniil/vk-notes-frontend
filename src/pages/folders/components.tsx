@@ -6,6 +6,7 @@ import React, {
   SetStateAction,
   useRef,
   useEffect,
+  useMemo,
 } from 'react';
 import { useMutation, useApolloClient } from '@apollo/client';
 import {
@@ -51,7 +52,7 @@ export const FolderCell: FC<SimpleCellProps & FolderCellProps> = ({
         expandable
         indicator={folder.count}
         before={
-          <Icon>
+          <Icon className={'Icon--28 Icon--w-28 Icon--h-28'}>
             <TiFolder size={'28px'} />
           </Icon>
         }
@@ -86,6 +87,7 @@ export const CreateAlert: FC<CreateAlertProps> = ({
     CreateFolderVariables
   >(CREATE_FOLDER_MUTATION);
   const [name, setName] = useState('');
+  const folderName = useMemo(() => name.trim(), [name]);
 
   const client = useApolloClient();
 
@@ -93,7 +95,7 @@ export const CreateAlert: FC<CreateAlertProps> = ({
     createFolder({
       variables: {
         input: {
-          name,
+          name: folderName,
         },
       },
     })
@@ -111,7 +113,7 @@ export const CreateAlert: FC<CreateAlertProps> = ({
       })
       .catch(console.error)
       .finally(onClose);
-  }, [createFolder, name, onClose, client, count, setCount]);
+  }, [createFolder, folderName, onClose, client, count, setCount]);
 
   return (
     <AlertNotClosable
@@ -124,7 +126,7 @@ export const CreateAlert: FC<CreateAlertProps> = ({
         {
           title: 'Сохранить',
           mode: 'default',
-          action: !name || loading ? undefined : send,
+          action: !folderName || loading ? undefined : send,
         },
       ]}
       onClose={onClose}

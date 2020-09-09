@@ -4,6 +4,7 @@ import React, {
   SetStateAction,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -117,6 +118,7 @@ export const UpdateAlert: FC<UpdateAlertProps> = ({
     UpdateFolderVariables
   >(UPDATE_FOLDER_MUTATION);
   const [name, setName] = useState(initialName);
+  const folderName = useMemo(() => name.trim(), [name]);
 
   const client = useApolloClient();
 
@@ -125,7 +127,7 @@ export const UpdateAlert: FC<UpdateAlertProps> = ({
       variables: {
         input: {
           id,
-          name,
+          name: folderName,
         },
       },
     })
@@ -139,7 +141,7 @@ export const UpdateAlert: FC<UpdateAlertProps> = ({
             __typename: 'FolderDto',
           }),
           data: {
-            name,
+            name: folderName,
           },
         });
       })
@@ -148,7 +150,7 @@ export const UpdateAlert: FC<UpdateAlertProps> = ({
         onClose();
         setCanNavigate(true);
       });
-  }, [updateFolder, name, onClose, client, id, setCanNavigate]);
+  }, [updateFolder, folderName, onClose, client, id, setCanNavigate]);
 
   return (
     <AlertNotClosable
@@ -161,7 +163,7 @@ export const UpdateAlert: FC<UpdateAlertProps> = ({
         {
           title: 'Сохранить',
           mode: 'default',
-          action: !name || loading ? undefined : send,
+          action: !folderName || loading ? undefined : send,
         },
       ]}
       onClose={onClose}

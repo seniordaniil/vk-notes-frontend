@@ -1,5 +1,7 @@
 import React, { FC } from 'react';
 
-const Icon: FC = ({ children }) => <div className={'Icon'}>{children}</div>;
+const Icon: FC<{ className?: string }> = ({ children, className }) => (
+  <div className={'Icon' + (className ? ' ' + className : '')}>{children}</div>
+);
 
 export default Icon;

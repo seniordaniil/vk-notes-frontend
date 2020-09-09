@@ -14,9 +14,7 @@ import {
 } from '@vkontakte/vkui';
 import { FolderCell, CreateAlert } from './components';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import PageHeader from 'ui/molecules/page-header';
 import { TiFolderAdd, TiFolder } from 'react-icons/ti';
-import IconCircle from 'ui/atoms/icon-circle';
 import Icon from 'ui/atoms/icons';
 import ToolbarTriple from 'ui/molecules/toolbar-triple';
 import plural from 'plural-ru';
@@ -87,27 +85,22 @@ const FoldersPage: FC = () => {
 
   return (
     <>
-      <PanelHeader separator={false} />
+      <PanelHeader
+        separator={false}
+        left={
+          <PanelHeaderButton onClick={onCreate}>
+            <Icon className={'Icon--28'}>
+              <TiFolderAdd size={'28px'} />
+            </Icon>
+          </PanelHeaderButton>
+        }
+      >
+        Папки
+      </PanelHeader>
       {!!data && (
         <>
           {folders.length > 0 ? (
             <PullToRefresh onRefresh={onRefresh} isFetching={isFetching}>
-              <PageHeader
-                separator={'show'}
-                aside={
-                  <PanelHeaderButton onClick={onCreate}>
-                    <IconCircle
-                      size={'28px'}
-                      color={'#ffffff'}
-                      bg={'var(--accent)'}
-                    >
-                      <TiFolderAdd size={'20px'} />
-                    </IconCircle>
-                  </PanelHeaderButton>
-                }
-              >
-                Папки
-              </PageHeader>
               <Group>
                 {folders.length > 0 && (
                   <InfiniteScroll

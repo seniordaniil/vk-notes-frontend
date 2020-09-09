@@ -1,7 +1,6 @@
 import React, { FC, useCallback } from 'react';
 import { useLocation } from 'features/router';
 import { NotesMainPage, NotesJoinPage } from './pages';
-import PanelHeaderBack from 'ui/molecules/panel-header-back';
 
 const NotesPage: FC = () => {
   const { params, goBack, router } = useLocation();
@@ -13,7 +12,6 @@ const NotesPage: FC = () => {
 
   return (
     <>
-      <PanelHeaderBack separator={false} onClick={back} label={'Назад'} />
       {params?.invite ? (
         <NotesJoinPage
           goBack={back}
@@ -22,7 +20,7 @@ const NotesPage: FC = () => {
           router={router}
         />
       ) : (
-        <NotesMainPage id={params.folderId} router={router} />
+        <NotesMainPage id={params.folderId} router={router} goBack={back} />
       )}
     </>
   );

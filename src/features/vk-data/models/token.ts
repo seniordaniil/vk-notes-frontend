@@ -1,6 +1,8 @@
 import { attach } from 'effector';
 import { vk } from './domain';
+import { initParams } from 'features/router';
 import bridge from '@vkontakte/vk-bridge';
+import qs from 'querystring';
 
 export interface IToken {
   token: string;
@@ -24,8 +26,12 @@ const _getToken = vk
     };
   });
 
+const params = qs.parse(initParams);
+const access = (params['vk_access_token_settings'] as string) || '';
+const scope = access.split(',');
+
 export const $token = vk
-  .createStore<IToken>({ token: '', scope: [] }, { name: 'token' })
+  .createStore<IToken>({ token: '', scope }, { name: 'token' })
   .on(_getToken.doneData, (_, payload) => payload);
 
 export const getToken = attach({

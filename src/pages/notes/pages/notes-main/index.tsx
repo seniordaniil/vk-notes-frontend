@@ -7,19 +7,20 @@ import { Group, Button, PullToRefresh, Placeholder } from '@vkontakte/vkui';
 import { useSlice } from 'features/layout';
 import { NoteCell } from './components';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import PageHeader from 'ui/molecules/page-header';
 import Icon24GearOutline from '@vkontakte/icons/dist/24/gear_outline';
 import Icon28WriteSquareOutline from '@vkontakte/icons/dist/28/write_square_outline';
 import ToolbarTriple from 'ui/molecules/toolbar-triple';
+import PanelHeaderBack from 'ui/molecules/panel-header-back';
 
 import Icon56WriteOutline from '@vkontakte/icons/dist/56/write_outline';
 
 interface NotesMainPageProps {
   id: string;
   router: Router;
+  goBack: () => void;
 }
 
-const NotesMainPage: FC<NotesMainPageProps> = ({ id, router }) => {
+const NotesMainPage: FC<NotesMainPageProps> = ({ id, router, goBack }) => {
   const variables = useMemo<GetNotesVariables>(
     () => ({
       id,
@@ -82,63 +83,67 @@ const NotesMainPage: FC<NotesMainPageProps> = ({ id, router }) => {
     router.navigate('app.note', { folderId: id });
   }, [router, id]);
 
-  if (!data) return null;
   return (
     <>
-      {notes.length < 1 && (
-        <Placeholder
-          stretched
-          icon={<Icon56WriteOutline />}
-          header={'Нет заметок'}
-          action={
-            <Button size={'l'} onClick={create}>
-              Создать новую
-            </Button>
-          }
-        />
-      )}
-      <PullToRefresh onRefresh={onRefresh} isFetching={isFetching}>
-        <PageHeader>{data.folder.name}</PageHeader>
-        <Group>
-          {notes.length > 0 && (
-            <InfiniteScroll
-              next={next}
-              hasMore={true}
-              loader={null}
-              dataLength={notes.length}
-            >
-              {notes.map((note) => (
-                <NoteCell
-                  note={note}
-                  key={note.id}
-                  data-id={note.id}
-                  separator={true}
-                  onClick={onClick}
-                />
-              ))}
-            </InfiniteScroll>
+      <PanelHeaderBack separator={false} onClick={goBack}>
+        {data?.folder?.name}
+      </PanelHeaderBack>
+      {!data ? null : (
+        <>
+          {notes.length < 1 ? (
+            <Placeholder
+              stretched
+              icon={<Icon56WriteOutline />}
+              header={'Нет заметок'}
+              action={
+                <Button size={'l'} onClick={create}>
+                  Создать новую
+                </Button>
+              }
+            />
+          ) : (
+            <PullToRefresh onRefresh={onRefresh} isFetching={isFetching}>
+              <Group>
+                <InfiniteScroll
+                  next={next}
+                  hasMore={true}
+                  loader={null}
+                  dataLength={notes.length}
+                >
+                  {notes.map((note) => (
+                    <NoteCell
+                      note={note}
+                      key={note.id}
+                      data-id={note.id}
+                      separator={true}
+                      onClick={onClick}
+                    />
+                  ))}
+                </InfiniteScroll>
+              </Group>
+            </PullToRefresh>
           )}
-        </Group>
-      </PullToRefresh>
-      <ToolbarTriple
-        left={
-          <Button
-            mode={'tertiary'}
-            onClick={() =>
-              router.navigate('app.folder-settings', { folderId: id })
+          <ToolbarTriple
+            left={
+              <Button
+                mode={'tertiary'}
+                onClick={() =>
+                  router.navigate('app.folder-settings', { folderId: id })
+                }
+              >
+                <Icon24GearOutline />
+              </Button>
+            }
+            right={
+              <Button mode={'tertiary'} onClick={create}>
+                <Icon28WriteSquareOutline height={24} width={24} />
+              </Button>
             }
           >
-            <Icon24GearOutline />
-          </Button>
-        }
-        right={
-          <Button mode={'tertiary'} onClick={create}>
-            <Icon28WriteSquareOutline height={24} width={24} />
-          </Button>
-        }
-      >
-        {countDesc}
-      </ToolbarTriple>
+            {countDesc}
+          </ToolbarTriple>
+        </>
+      )}
     </>
   );
 };

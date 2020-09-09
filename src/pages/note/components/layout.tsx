@@ -54,14 +54,18 @@ const Title = styled.h2`
   margin-block-start: 0px;
   margin-block-end: 0px;
   font-size: 24px;
-  line-height: 36px;
+  line-height: 28px;
+  & + p {
+    padding-top: 8px;
+    box-sizing: border-box;
+  }
 `;
 
 const Paragraph = styled.p`
   margin-block-start: 0px;
   margin-block-end: 0px;
   font-size: 16px;
-  line-height: 24px;
+  line-height: 20px;
 `;
 
 export const RenderedElement: FC<RenderElementProps> = (props) => {

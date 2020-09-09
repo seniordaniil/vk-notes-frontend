@@ -1,11 +1,13 @@
 import React, { FC, useState, useCallback } from 'react';
-import { getToken } from 'features/vk-data';
+import { useStore } from 'effector-react';
+import { getToken, $token } from 'features/vk-data';
 import { Transforms } from 'slate';
 import { useEditor } from 'slate-react';
 import { instance } from 'api';
 import bridge from '@vkontakte/vk-bridge';
 import { useTouchPrevent, useTouch } from 'features/layout';
 import { Button, Spinner } from '@vkontakte/vkui';
+import { AccessAlert } from './access-alert';
 import Toolbar from 'ui/molecules/toolbar';
 
 import Icon28DeleteOutline from '@vkontakte/icons/dist/28/delete_outline';
@@ -17,16 +19,16 @@ interface EditorToolbarProps {
   onRemove?: () => void;
   save: () => Promise<any>;
   changed: boolean;
+  setPopout: React.Dispatch<React.SetStateAction<React.ReactNode>>;
 }
-
-const group = parseInt(process.env.REACT_APP_GROUP_ID);
-const album = parseInt(process.env.REACT_APP_ALBUM);
 
 export const EditorToolbar: FC<EditorToolbarProps> = ({
   onRemove,
   save,
   changed,
+  setPopout,
 }) => {
+  const token = useStore($token);
   const editor = useEditor();
 
   const [tbRef, setTbRef] = useState<HTMLDivElement>(null);
@@ -46,15 +48,13 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   const [uploading, setUploading] = useState(false);
   const uploadImage = useCallback(
     async (f: FileList) => {
-      const { token } = await getToken(['photos']);
+      const { token } = await getToken(['docs']);
 
       const { response } = await bridge.send('VKWebAppCallAPIMethod', {
-        method: 'photos.getUploadServer',
+        method: 'docs.getUploadServer',
         params: {
           v: '5.122',
           access_token: token,
-          album_id: album,
-          group_id: group,
         },
       });
 
@@ -74,37 +74,64 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
       );
 
       const { response: res } = await bridge.send('VKWebAppCallAPIMethod', {
-        method: 'photos.save',
+        method: 'docs.save',
         params: {
           v: '5.122',
           access_token: token,
-          album_id: album,
-          group_id: group,
-          server: data.server,
-          photos_list: data.photos_list,
-          hash: data.hash,
+          file: data.file,
         },
       });
 
-      const sizes = res[0].sizes as any[];
+      console.log('res', res);
+
+      const sizes = res.doc.preview.photo.sizes as PhotoSize[];
+      const s: Record<string, PhotoSize> = {};
+
+      for (const size of sizes) {
+        s[size.type] = size;
+      }
+
+      let src: string;
+
+      if (s['x']) src = s['x'].src;
+      else if (s['o']) src = s['o'].src;
+      else if (s['i']) src = s['i'].src;
+      else if (s['d']) src = s['d'].src;
+      else if (s['m']) src = s['m'].src;
+      else if (s['s']) src = s['s'].src;
 
       Transforms.insertNodes(editor, {
         type: 'img',
-        url: sizes.find((size) => size.type === 'x').url,
+        url: src,
         children: [{ text: '' }],
       });
     },
     [editor],
   );
 
-  const onFileChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+  const upload = useCallback(
+    (f: FileList) => {
       setUploading(true);
-      uploadImage(e.currentTarget.files)
+      uploadImage(f)
         .catch(console.error)
         .finally(() => setUploading(false));
     },
     [setUploading, uploadImage],
+  );
+
+  const onFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = e.currentTarget.files;
+      if (token.scope.includes('docs')) upload(files);
+      else
+        setPopout(
+          <AccessAlert
+            onClose={() => setPopout(null)}
+            onAction={() => upload(files)}
+          />,
+        );
+    },
+    [upload, setPopout, token],
   );
 
   const [saveRef, setSaveRef] = useState<HTMLElement>(null);
@@ -152,3 +179,8 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
     </>
   );
 };
+
+interface PhotoSize {
+  type: string;
+  src: string;
+}
