@@ -57,7 +57,6 @@ const Title = styled.h2`
   line-height: 28px;
   & + p {
     padding-top: 8px;
-    box-sizing: border-box;
   }
 `;
 

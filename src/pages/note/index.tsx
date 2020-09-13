@@ -1,11 +1,9 @@
-import React, { FC, useCallback, useMemo, Component } from 'react';
+import React, { FC, useCallback, useMemo, Component, useState } from 'react';
 import { createEditor } from 'slate';
 import { Slate, Editable, withReact, RenderElementProps } from 'slate-react';
-import {
-  useVisualViewPort,
-  useScrollRestoration,
-  PopoutValueContext,
-} from 'features/layout';
+import { useScrollRestoration, PopoutValueContext } from 'features/layout';
+import { $config } from 'features/vk-data';
+import { useStore } from 'effector-react';
 import { useValue } from 'features/context-manager';
 import { usePlatform, Footer, Div } from '@vkontakte/vkui';
 import {
@@ -13,7 +11,6 @@ import {
   Editor,
   withLayout,
   RenderedElement,
-  EditorBoxProps,
   withChecklists,
   EditorToolbar,
   withImages,
@@ -69,19 +66,13 @@ const NotePage: FC = () => {
     [],
   );
 
-  useScrollRestoration();
-  const height = useVisualViewPort(() => {
-    if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
-  const eBoxProps = useMemo<EditorBoxProps>(() => {
-    const unfixed = window.innerHeight > height;
-
-    return {
-      height: `${height}px`,
-      unfixed,
-      platform,
-    };
-  }, [height, platform]);
+  const config = useStore($config);
+  const [unfixed, setUnfixed] = useState(false);
+  useScrollRestoration(unfixed);
+  const viewport = useMemo(
+    () => `${window.innerHeight - (config?.insets?.bottom || 0)}px`,
+    [config],
+  );
 
   return (
     <>
@@ -96,7 +87,11 @@ const NotePage: FC = () => {
               setChanged(true);
             }}
           >
-            <EditorBox {...eBoxProps}>
+            <EditorBox
+              viewport={viewport}
+              unfixed={unfixed}
+              platform={platform}
+            >
               <Editor>
                 {updated && <Desc>{updated}</Desc>}
                 <Div>
@@ -104,6 +99,10 @@ const NotePage: FC = () => {
                     className={`Editable`}
                     renderElement={renderElement}
                     placeholder={'Напишите что-нибудь...'}
+                    onFocus={() => {
+                      setUnfixed(true);
+                    }}
+                    onBlur={() => setUnfixed(false)}
                   />
                 </Div>
               </Editor>

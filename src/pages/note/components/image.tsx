@@ -21,11 +21,8 @@ const Img = styled.img`
 
 const ImgBox = styled.div`
   padding-top: 1em;
-  box-sizing: border-box;
-
   & + * {
     padding-top: 1em;
-    box-sizing: border-box;
   }
 `;
 

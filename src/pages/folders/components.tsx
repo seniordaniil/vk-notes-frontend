@@ -19,7 +19,11 @@ import {
 } from 'api';
 import { GetFolders_folders } from 'api';
 import { SimpleCell, Separator } from '@vkontakte/vkui';
-import { AlertNotClosable, useTouchStop } from 'features/layout';
+import {
+  AlertNotClosable,
+  useTouchStop,
+  useTouchPrevent,
+} from 'features/layout';
 import { TiFolder } from 'react-icons/ti';
 import { SimpleCellProps } from '@vkontakte/vkui/dist/components/SimpleCell/SimpleCell';
 import styled from 'styled-components';
@@ -76,6 +80,7 @@ export const CreateAlert: FC<CreateAlertProps> = ({
   setCount,
 }) => {
   useTouchStop(window, true);
+  useTouchPrevent(window, true);
   const ref = useRef<HTMLInputElement>();
 
   useEffect(() => {

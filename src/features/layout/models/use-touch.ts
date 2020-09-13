@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 export const useTouchStop = (el: GlobalEventHandlers, capture?: boolean) => {
   useEffect(() => {
@@ -35,10 +35,31 @@ export function useTouchPrevent(el: GlobalEventHandlers, capture?: boolean) {
   }, [el, capture]);
 }
 
-export const useScrollRestoration = () => {
+export const useScrollRestoration = (f?: boolean) => {
+  const flag = useRef<boolean>(f);
+
+  useEffect(() => {
+    flag.current = f;
+
+    if (f) {
+      const listener = () => {
+        if (window.scrollY > 0) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      };
+
+      window.addEventListener('scroll', listener, {
+        capture: true,
+        once: true,
+      });
+
+      return () => window.removeEventListener('scroll', listener, true);
+    }
+  }, [f, flag]);
+
   useEffect(() => {
     const listener = () => {
-      if (window.scrollY > 0) {
+      if (flag.current && window.scrollY > 0) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     };
@@ -46,7 +67,7 @@ export const useScrollRestoration = () => {
     window.addEventListener('touchend', listener, { capture: true });
 
     return () => window.removeEventListener('touchend', listener, true);
-  }, []);
+  }, [flag]);
 };
 
 type Deps = [GlobalEventHandlers, ...any[]];

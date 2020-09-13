@@ -1,5 +1,9 @@
 import React, { FC, useCallback, useState } from 'react';
-import { AlertNotClosable, useTouchStop } from 'features/layout';
+import {
+  AlertNotClosable,
+  useTouchPrevent,
+  useTouchStop,
+} from 'features/layout';
 import { useCanNavigate } from 'features/router';
 
 interface RemoveAlertProps {
@@ -15,6 +19,7 @@ export const RemoveAlert: FC<RemoveAlertProps> = ({
 }) => {
   const [removing, setRemoving] = useState(false);
   useTouchStop(window, true);
+  useTouchPrevent(window, true);
   const [, setCanNavigate] = useCanNavigate(false, true);
 
   const onClick = useCallback(() => {

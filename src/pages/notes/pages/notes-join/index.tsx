@@ -97,7 +97,7 @@ const NotesJoinPage: FC<NotesJoinPageProps> = ({
       {!data ? null : (
         <Placeholder
           stretched
-          header={data.folder ? data.folder.name : '404'}
+          header={data.folder ? data.folder.name : 'Упс!'}
           icon={
             <Icon>
               <TiFolder size={'56px'} />

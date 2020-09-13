@@ -2,7 +2,7 @@ import { ANDROID, OS } from '@vkontakte/vkui';
 import styled from 'styled-components';
 
 export interface EditorBoxProps {
-  height: string;
+  viewport: string;
   unfixed?: boolean;
   platform: OS;
 }
@@ -11,8 +11,8 @@ export const EditorBox = styled.div<EditorBoxProps>`
   overflow-y: hidden;
   display: flex;
   flex-direction: column;
-  height: ${({ height, unfixed, platform }) =>
-    `calc(${height} - ${
+  height: ${({ viewport, unfixed, platform }) =>
+    `calc(${viewport} - ${
       platform === ANDROID ? '56px' : '52px'
     } - var(--safe-area-inset-top) ${unfixed ? '' : '- 52px'})`};
   justify-content: space-between;
@@ -42,6 +42,10 @@ export const Editor = styled.div`
       & * {
         user-select: none !important;
       }
+    }
+
+    & > * {
+      box-sizing: border-box;
     }
   }
 `;

@@ -61,23 +61,6 @@ router.useMiddleware(() => canNavigateMiddleware);
 
 router.usePlugin(historyPlugin, browserPlugin({ useHash: true }), loggerPlugin);
 
-bridge.subscribe(({ detail }) => {
-  if (detail.type === 'VKWebAppUpdateConfig') {
-    console.log('update data', detail.data);
-    const schemeAttribute = document.createAttribute('scheme');
-    schemeAttribute.value = detail.data.scheme || 'bright_light';
-
-    document.body.attributes.setNamedItem(schemeAttribute);
-  }
-});
-
-/*const deleteIsUser = () => {
-  return bridge.send('VKWebAppStorageSet', {
-    key: 'isUser',
-    value: '',
-  });
-};*/
-
 function bootstrap() {
   const onboarding = bridge
     .send('VKWebAppStorageGet', {

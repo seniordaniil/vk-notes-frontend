@@ -48,24 +48,17 @@ const CheckListItem = styled.div`
   flex-direction: row;
   align-items: center;
   word-break: break-word;
-  & + & {
-    padding-top: 8px;
-    box-sizing: border-box;
-  }
-
   * + & {
     padding-top: 1em;
-    box-sizing: border-box;
   }
-
+  & + & {
+    padding-top: 8px;
+  }
   & + :not(&) {
     padding-top: 1em;
-    box-sizing: border-box;
   }
-
   &:last-child {
     padding-bottom: 1em;
-    box-sizing: border-box;
   }
 `;
 

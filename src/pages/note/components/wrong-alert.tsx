@@ -1,5 +1,9 @@
 import React, { FC } from 'react';
-import { AlertNotClosable, useTouchStop } from 'features/layout';
+import {
+  AlertNotClosable,
+  useTouchPrevent,
+  useTouchStop,
+} from 'features/layout';
 import { useCanNavigate } from 'features/router';
 
 interface WrongAlertProps {
@@ -8,6 +12,7 @@ interface WrongAlertProps {
 
 export const WrongAlert: FC<WrongAlertProps> = ({ onClose }) => {
   useTouchStop(window, true);
+  useTouchPrevent(window, true);
   useCanNavigate(false, true);
 
   return (

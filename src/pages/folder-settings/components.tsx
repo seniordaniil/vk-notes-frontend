@@ -33,7 +33,7 @@ import {
   GetFolder,
   GetFolderVariables,
 } from 'api';
-import { useTouchStop } from 'features/layout/models';
+import { useTouchPrevent, useTouchStop } from 'features/layout/models';
 import { useApolloClient, useMutation } from '@apollo/client';
 import { AlertNotClosable } from 'features/layout/components';
 import AlertInput from 'ui/molecules/alert-input';
@@ -106,6 +106,7 @@ export const UpdateAlert: FC<UpdateAlertProps> = ({
   name: initialName,
 }) => {
   useTouchStop(window, true);
+  useTouchPrevent(window, true);
   const [, setCanNavigate] = useCanNavigate(false, true);
   const ref = useRef<HTMLInputElement>();
 
@@ -192,6 +193,7 @@ export const RemoveAlert: FC<RemoveAlertProps> = ({ id, onClose, mode }) => {
   const { router, goBack } = useLocation();
 
   useTouchStop(window, true);
+  useTouchPrevent(window, true);
   const [, setCanNavigate] = useCanNavigate(false, true);
 
   const client = useApolloClient();
@@ -315,6 +317,7 @@ export const RemoveMemberAlert: FC<RemoveMemberAlertProps> = ({
   setCount,
 }) => {
   useTouchStop(window, true);
+  useTouchPrevent(window, true);
   useCanNavigate(false, true);
 
   const client = useApolloClient();
